@@ -3,6 +3,7 @@ import { Button, Text, TextInput, TouchableOpacity, View, BackHandler } from 're
 import { SafeAreaView, StackActions } from 'react-navigation';
 import { DrawerActions, NavigationDrawerProp } from 'react-navigation-drawer';
 import { FeatureButton } from '@src/components/FeatureButton';
+import { layoutConstants } from '@src/constants/LayoutConstants';
 
 /**
  * https://reactnavigation.org/docs/4.x/typescript
@@ -23,21 +24,16 @@ const MasterScreen = (props: Props) => {
         props.navigation.dispatch(DrawerActions.toggleDrawer());
     }
 
-    const onButtonPress = () => {
-        const pushAction = StackActions.push({
-            routeName: 'Stack1',
-            params: {
-                myUserId: 9,
-            },
-        });
-
-        props.navigation.dispatch(pushAction);
+    const onLayout = (e) => {
+        const layout = { x: e.nativeEvent.layout.x, y: e.nativeEvent.layout.y };
+        console.log("Layout", layout);
+        layoutConstants.contentOffset = layout.y;
     }
 
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
-            <View style={{ height: 50, backgroundColor: 'red', flexDirection: 'row', alignItems: 'center' }}>
+            <View style={{ height: 50, backgroundColor: 'red', flexDirection: 'row', alignItems: 'center' }} onLayout={onLayout}>
 
                 <TouchableOpacity style={{ backgroundColor: 'yellow' }}
                     onPress={() => onMenuPress()}>

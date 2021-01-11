@@ -5,17 +5,24 @@ import { useSelector, useDispatch } from 'react-redux'
 import Animated from 'react-native-reanimated';
 import { EasingFunctions } from '@src/constants/EasingFunctions';
 import { RootState } from '@src/types';
+import { layoutConstants } from '@src/constants/LayoutConstants';
+import { updatePressInfo } from '@src/reducers';
 
 const ModalOverlay = () => {
     const pressInfo = useSelector((state: RootState) => state.pressInfo);
+    const dispatch = useDispatch();
     if (!pressInfo)
         return null
 
-    const transform = [{ translateY: pressInfo.y }, { translateX: pressInfo.x }]
+    const transform = [{ translateY: pressInfo.y - layoutConstants.contentOffset }, { translateX: pressInfo.x }]
+
+    const dismiss = () => {
+        dispatch(updatePressInfo(null));
+    }
 
     return (
         <SafeAreaView style={{ ...styles.overlayContainer }}>
-            <Pressable onPress={() => { Alert.alert("TEST") }} style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.7)' }}>
+            <Pressable onPress={dismiss} style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.7)' }}>
 
                 <Pressable onPress={() => { Alert.alert("e") }} style={{ backgroundColor: 'red', width: pressInfo.width, height: pressInfo.height, transform: transform }}>
                     <View >

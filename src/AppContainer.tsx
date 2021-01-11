@@ -15,7 +15,7 @@ const InnerStack = createStackNavigator({
 
 const RootStack = createDrawerNavigator({
     Home: {
-        screen: InnerStack
+        screen: MasterScreen
     },
     SecondScreen: {
         screen: InnerStack
