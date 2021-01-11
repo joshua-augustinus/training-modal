@@ -18,7 +18,7 @@ const FeatureButton = (props: Props) => {
     const onPress = React.useCallback(() => {
 
         cardRef.current.measure((x, y, width, height, pageX, pageY) => {
-            const layout = { x: pageX, y: pageY, width, height, borderRadius: 0, imageSource: IMAGE };
+            const layout = { x: pageX, y: pageY, width, height, borderRadius: 10, imageSource: IMAGE, };
 
             dispatch(updatePressInfo(layout));
         });
@@ -26,13 +26,10 @@ const FeatureButton = (props: Props) => {
     }, []);
 
     return (
-        <Pressable onPress={onPress}  >
-            <View ref={cardRef} collapsable={false}>
+        <Pressable onPress={onPress}>
+            <View ref={cardRef} collapsable={false} style={{ padding: 0, overflow: 'hidden', backgroundColor: 'red', width: width - 20, borderRadius: 10 }}>
                 <Image style={{ ...styles.image, width: width, height: FEATURE_BUTTON_HEIGHT }} resizeMode='cover' source={IMAGE} />
-
             </View>
-
-
         </Pressable>
     )
 }
