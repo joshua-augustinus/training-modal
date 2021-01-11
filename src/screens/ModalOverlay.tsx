@@ -1,33 +1,49 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated as Spring, View, BackHandler, useWindowDimensions, StyleSheet, Image, Text, Pressable, Alert } from 'react-native';
+import { Animated as Spring, View, BackHandler, useWindowDimensions, StyleSheet, Image, Text, Pressable, Alert, Animated } from 'react-native';
 import { SafeAreaView, StackActions } from 'react-navigation';
 import { useSelector, useDispatch } from 'react-redux'
-import Animated from 'react-native-reanimated';
 import { EasingFunctions } from '@src/constants/EasingFunctions';
 import { RootState } from '@src/types';
 import { layoutConstants } from '@src/constants/LayoutConstants';
 import { updatePressInfo } from '@src/reducers';
+import { getSpringConfig } from '@src/constants/SpringConfig';
 
 const ModalOverlay = () => {
     const pressInfo = useSelector((state: RootState) => state.pressInfo);
     const dispatch = useDispatch();
+    const springState = useRef(new Animated.Value(0)).current;
+    const screenWidth = useWindowDimensions().width;
+
+    useEffect(() => {
+        if (pressInfo) {
+            Spring.spring(springState, getSpringConfig(1)).start();
+        }
+    }, [pressInfo])
+
     if (!pressInfo)
         return null
 
-    const transform = [{ translateY: pressInfo.y - layoutConstants.contentOffset }, { translateX: pressInfo.x }]
+    const translateX = springState.interpolate({
+        inputRange: [0, 1],
+        outputRange: [screenWidth, pressInfo.x]
+    })
+
+    const transform = [{ translateY: pressInfo.y - layoutConstants.contentOffset }, { translateX: translateX }]
 
     const dismiss = () => {
         dispatch(updatePressInfo(null));
     }
 
+
+
     return (
         <SafeAreaView style={{ ...styles.overlayContainer }}>
             <Pressable onPress={dismiss} style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.7)' }}>
 
-                <Pressable onPress={() => { Alert.alert("e") }} style={{ backgroundColor: 'red', width: pressInfo.width, height: pressInfo.height, transform: transform }}>
-                    <View >
+                <Pressable onPress={() => { Alert.alert("e") }} >
+                    <Animated.View style={{ backgroundColor: 'red', width: pressInfo.width, height: pressInfo.height, transform: transform }}>
                         <Text>Placholder</Text>
-                    </View>
+                    </Animated.View>
                 </Pressable>
 
             </Pressable>
