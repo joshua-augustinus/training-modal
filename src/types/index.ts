@@ -6,7 +6,7 @@ export interface NavigationOptions {
 }
 
 export interface RootState {
-    isLoadingOverlayVisible: boolean
+    pressInfo?: PressInfo
 }
 
 export interface PressInfo {
