@@ -38,13 +38,15 @@ const ModalOverlay = () => {
 
     return (
         <SafeAreaView style={{ ...styles.overlayContainer }}>
-            <Pressable onPress={dismiss} style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.7)' }}>
+            <Pressable onPress={dismiss} style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
 
-                <Pressable onPress={() => { Alert.alert("e") }} >
-                    <Animated.View style={{ backgroundColor: 'red', width: pressInfo.width, height: pressInfo.height, transform: transform }}>
-                        <Text>Placholder</Text>
-                    </Animated.View>
-                </Pressable>
+                <Animated.View style={{ backgroundColor: 'red', width: pressInfo.width, height: pressInfo.height, transform: transform }}>
+                    <Pressable onPress={() => { }} style={{ flex: 1 }}>
+
+                        <Text >Placholder</Text>
+                    </Pressable>
+
+                </Animated.View>
 
             </Pressable>
         </SafeAreaView>
