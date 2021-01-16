@@ -2,11 +2,11 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Animated as Spring, View, BackHandler, useWindowDimensions, StyleSheet, Image, Text, Pressable, Alert, Animated } from 'react-native';
 import { SafeAreaView, StackActions } from 'react-navigation';
 import { useSelector, useDispatch } from 'react-redux'
-import { EasingFunctions } from '@src/constants/EasingFunctions';
 import { RootState } from '@src/types';
-import { layoutConstants } from '@src/constants/LayoutConstants';
 import { updatePressInfo } from '@src/reducers';
 import { getSpringConfig } from '@src/constants/SpringConfig';
+
+const HEIGHT = 250;
 
 const ModalOverlay = () => {
     const pressInfo = useSelector((state: RootState) => state.pressInfo);
@@ -17,38 +17,43 @@ const ModalOverlay = () => {
     useEffect(() => {
         if (pressInfo) {
             Spring.spring(springState, getSpringConfig(1)).start();
+        } else {
+
         }
     }, [pressInfo])
 
-    if (!pressInfo)
-        return null
+    const extra = 50;//needed for the bottom gap on iphones
 
-    const translateX = springState.interpolate({
+    const translateY = springState.interpolate({
         inputRange: [0, 1],
-        outputRange: [screenWidth, pressInfo.x]
+        outputRange: [HEIGHT + extra, extra]
     })
 
-    const transform = [{ translateY: pressInfo.y - layoutConstants.contentOffset }, { translateX: translateX }]
 
     const dismiss = () => {
-        dispatch(updatePressInfo(null));
+        Spring.spring(springState, getSpringConfig(0)).start(() => {
+            dispatch(updatePressInfo(null));
+
+        });
+
     }
 
+    const transform = [{ translateY: translateY }]
 
+    if (!pressInfo)
+        return null;
 
     return (
         <SafeAreaView style={{ ...styles.overlayContainer }}>
-            <Pressable onPress={dismiss} style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.4)' }}>
+            <Pressable onPress={dismiss} style={{ flex: 1, }}>
 
-                <Animated.View style={{ backgroundColor: 'red', width: pressInfo.width, height: pressInfo.height, transform: transform, borderRadius: pressInfo.borderRadius }}>
-                    <Pressable onPress={() => { }} style={{ flex: 1 }}>
 
-                        <Text >Placholder</Text>
-                    </Pressable>
-
-                </Animated.View>
 
             </Pressable>
+            <Animated.View style={{ ...styles.contentContainer, transform: transform }}>
+                <View style={styles.header}></View>
+                <View style={{ flex: 1, backgroundColor: 'white' }} />
+            </Animated.View>
         </SafeAreaView>
     )
 }
@@ -58,13 +63,22 @@ export { ModalOverlay }
 
 const styles = StyleSheet.create({
     contentContainer: {
-        flex: 1, alignItems: 'flex-start', justifyContent: 'flex-start', backgroundColor: 'black',
+        backgroundColor: 'rgba(0, 0, 0, 0)',
+        width: '100%',
+        height: HEIGHT,
+        paddingHorizontal: 2
+    },
+    header: {
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+        height: 50,
+        backgroundColor: '#208EAC'
     },
     overlayContainer: {
         ...StyleSheet.absoluteFillObject,
         overflow: 'hidden',
-        zIndex: 1//ScrollView of activity will not work otherwis    },
-
+        zIndex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.7)'
     },
     textContainer: {
         ...StyleSheet.absoluteFillObject,
