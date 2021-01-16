@@ -1,18 +1,19 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated as Spring, View, BackHandler, useWindowDimensions, StyleSheet, Image, Text, Pressable, Alert, Animated } from 'react-native';
-import { SafeAreaView, StackActions } from 'react-navigation';
+import { Animated as Spring, View, BackHandler, useWindowDimensions, StyleSheet, Image, Text, Pressable, Alert, Animated, Easing } from 'react-native';
+import { SafeAreaView } from 'react-navigation';
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@src/types';
 import { updatePressInfo } from '@src/reducers';
 import { getSpringConfig } from '@src/constants/SpringConfig';
 
 const HEIGHT = 250;
+const OVERLAY_BACKGROUND = 'rgba(0, 0, 0, 0.7)';
 
 const ModalOverlay = () => {
     const pressInfo = useSelector((state: RootState) => state.pressInfo);
     const dispatch = useDispatch();
     const springState = useRef(new Animated.Value(0)).current;
-    const screenWidth = useWindowDimensions().width;
+    const [backgroundColor, setBackgroundColor] = useState(OVERLAY_BACKGROUND);
 
     useEffect(() => {
         if (pressInfo) {
@@ -31,10 +32,17 @@ const ModalOverlay = () => {
 
 
     const dismiss = () => {
-        Spring.spring(springState, getSpringConfig(0)).start(() => {
+        setBackgroundColor('transparent')
+        Animated.timing(springState, {
+            toValue: 0,
+            useNativeDriver: true,
+            easing: Easing.back(1),
+            duration: 500
+        }).start(() => {
             dispatch(updatePressInfo(null));
+            setBackgroundColor(OVERLAY_BACKGROUND)
+        })
 
-        });
 
     }
 
@@ -44,7 +52,7 @@ const ModalOverlay = () => {
         return null;
 
     return (
-        <SafeAreaView style={{ ...styles.overlayContainer }}>
+        <SafeAreaView style={{ ...styles.overlayContainer, backgroundColor: backgroundColor }}>
             <Pressable onPress={dismiss} style={{ flex: 1, }}>
 
 
@@ -78,7 +86,6 @@ const styles = StyleSheet.create({
         ...StyleSheet.absoluteFillObject,
         overflow: 'hidden',
         zIndex: 1,
-        backgroundColor: 'rgba(0, 0, 0, 0.7)'
     },
     textContainer: {
         ...StyleSheet.absoluteFillObject,
